@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.github.rainmanhhh</groupId>
+    <artifactId>spring-kotlin-parent</artifactId>
+    <version>3.0.0</version>
+    <relativePath/>
+  </parent>
+  <artifactId>ez-webjooq-spring-boot-starter</artifactId>
+  <version>3.0.0-SNAPSHOT</version>
+  <name>webjooq</name>
+  <description>provide some extensions for ez-jooq-spring-boot-starter and ez-spring-web</description>
+  <dependencies>
+    <dependency>
+      <groupId>com.github.rainmanhhh</groupId>
+      <artifactId>ez-jooq-spring-boot-starter</artifactId>
+      <version>3.0.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.github.rainmanhhh</groupId>
+      <artifactId>ez-spring-web</artifactId>
+      <version>3.0.0</version>
+    </dependency>
+  </dependencies>
+  <repositories>
+    <repository>
+      <id>jitpack</id>
+      <url>https://jitpack.io</url>
+    </repository>
+  </repositories>
+</project>
