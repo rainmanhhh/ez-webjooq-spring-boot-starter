@@ -8,14 +8,14 @@
     <relativePath/>
   </parent>
   <artifactId>ez-webjooq-spring-boot-starter</artifactId>
-  <version>3.0.0</version>
+  <version>3.0.1</version>
   <name>webjooq</name>
   <description>provide some extensions for ez-jooq-spring-boot-starter and ez-spring-web</description>
   <dependencies>
     <dependency>
       <groupId>com.github.rainmanhhh</groupId>
       <artifactId>ez-jooq-spring-boot-starter</artifactId>
-      <version>3.0.0</version>
+      <version>3.0.1</version>
     </dependency>
     <dependency>
       <groupId>com.github.rainmanhhh</groupId>

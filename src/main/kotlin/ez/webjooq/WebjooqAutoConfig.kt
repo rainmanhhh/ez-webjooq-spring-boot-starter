@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Bean
 @ConfigurationProperties("ez.webjooq")
 class WebjooqAutoConfig {
   /**
-   * http header name for pagination total count
+   * http header name for pagination total count. default value is "x-total-count"
    */
   var paginateHeader = "x-total-count"
 
