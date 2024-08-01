@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package ez.webjooq
 
 import org.jooq.*
