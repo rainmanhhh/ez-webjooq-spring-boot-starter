@@ -68,21 +68,20 @@ open class WebjooqDao<R : UpdatableRecord<R>, OuterPojo : Any, InnerPojo : Any, 
   }
 
   /**
-   * delete records by pojos(convert pojo to where condition)
+   * fetch pojos and delete them
+   * ```kotlin
+   * dao.delete { it.fetchByFoo("123") }
+   * dao.delete { it.fetchByFoo("456").filter { p -> p.status == 0 } }
+   * ```
    */
-  fun delete(pojoList: Collection<OuterPojo>) {
-    dao.delete(pojoList.map(outerPojoToInner))
+  fun delete(fetchAction: (D) -> Collection<InnerPojo>) {
+    dao.delete(fetch(fetchAction).map(outerPojoToInner))
   }
 
   /**
-   * delete records by pojos(convert pojo to where condition)
-   */
-  fun delete(vararg pojos: OuterPojo) {
-    delete(pojos.asList())
-  }
-
-  /**
-   * update records by pojos(auto identify pk field from pojo)
+   * update records by pojos
+   * - input pojos should contain all fields of record
+   * - pk fields will be used in where condition, other fields will be used in set clause
    */
   fun update(pojoList: Collection<OuterPojo>): MutableList<OuterPojo> {
     val innerPojoList = pojoList.map(outerPojoToInner)
@@ -91,11 +90,24 @@ open class WebjooqDao<R : UpdatableRecord<R>, OuterPojo : Any, InnerPojo : Any, 
   }
 
   /**
-   * update records by pojos(auto identify pk field from pojo)
+   * update records by pojos
+   * - input pojos should contain all fields of record
+   * - pk fields will be used in where condition, other fields will be used in set clause
    */
   fun update(vararg pojos: OuterPojo): MutableList<OuterPojo> {
     return update(pojos.asList())
   }
+
+  /**
+   * fetch pojos and update them
+   * ```kotlin
+   * dao.update { it.fetchByFoo("123").onEach { p -> p.status = 1 } }
+   * ```
+   */
+  fun update(fetchAction: (D) -> Collection<InnerPojo>) {
+    update(fetch(fetchAction))
+  }
+
 
   /**
    * get table primary key fields
