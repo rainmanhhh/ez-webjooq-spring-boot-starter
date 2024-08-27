@@ -35,7 +35,7 @@ open class WebjooqDao<R : UpdatableRecord<R>, OuterPojo : Any, InnerPojo : Any, 
   }
 
   /**
-   * insert a record
+   * insert a row
    */
   fun insert(pojo: OuterPojo): OuterPojo {
     val innerPojo = outerPojoToInner(pojo)
@@ -44,7 +44,7 @@ open class WebjooqDao<R : UpdatableRecord<R>, OuterPojo : Any, InnerPojo : Any, 
   }
 
   /**
-   * insert multiple records
+   * insert multiple rows
    */
   fun insert(pojoList: Collection<OuterPojo>): MutableList<OuterPojo> {
     val innerPojoList = pojoList.map(outerPojoToInner)
@@ -53,7 +53,7 @@ open class WebjooqDao<R : UpdatableRecord<R>, OuterPojo : Any, InnerPojo : Any, 
   }
 
   /**
-   * delete records by ids
+   * delete rows by ids
    */
   fun deleteById(idList: Collection<OuterId>) {
     val innerPKList = idList.map(idToInner)
@@ -61,7 +61,7 @@ open class WebjooqDao<R : UpdatableRecord<R>, OuterPojo : Any, InnerPojo : Any, 
   }
 
   /**
-   * delete records by ids
+   * delete rows by ids
    */
   fun deleteById(vararg ids: OuterId) {
     deleteById(ids.asList())
@@ -79,8 +79,8 @@ open class WebjooqDao<R : UpdatableRecord<R>, OuterPojo : Any, InnerPojo : Any, 
   }
 
   /**
-   * update records by pojos
-   * - input pojos should contain all fields of record
+   * update rows by pojos
+   * - input pojos should contain all fields of row
    * - pk fields will be used in where condition, other fields will be used in set clause
    */
   fun update(pojoList: Collection<OuterPojo>): MutableList<OuterPojo> {
@@ -90,8 +90,8 @@ open class WebjooqDao<R : UpdatableRecord<R>, OuterPojo : Any, InnerPojo : Any, 
   }
 
   /**
-   * update records by pojos
-   * - input pojos should contain all fields of record
+   * update rows by pojos
+   * - input pojos should contain all fields of row
    * - pk fields will be used in where condition, other fields will be used in set clause
    */
   fun update(vararg pojos: OuterPojo): MutableList<OuterPojo> {
@@ -131,27 +131,45 @@ open class WebjooqDao<R : UpdatableRecord<R>, OuterPojo : Any, InnerPojo : Any, 
   }
 
   /**
-   * update record by id
-   * @return the updated record
+   * find row by id. converted to [R]
    */
-  fun updateById(id: OuterId, pojo: OuterPojo): OuterPojo? {
+  fun findRecordById(id: OuterId): R? {
     val innerId = idToInner(id)
     val dsl = dao.configuration().dsl()
-    val record = dsl.selectFrom(dao.table)
+    return dsl.selectFrom(dao.table)
       .where(pk().eq(innerId))
       .fetchOne()
-    if (record != null) {
-      val innerPojo = outerPojoToInner(pojo)
-      record.from(innerPojo)
-      record.update()
-      return innerPojoToOuter(innerPojo)
-    } else {
-      return null
-    }
   }
 
   /**
-   * find record by id
+   * update row by id
+   * ```
+   * val updated = dao.updateById(id, pojo) // pojo should contains all fields of row
+   * ```
+   * @return the updated row. converted to [OuterPojo]
+   */
+  fun updateById(id: OuterId, pojo: OuterPojo): OuterPojo? = findRecordById(id)?.let {
+    val innerPojo = outerPojoToInner(pojo)
+    it.from(innerPojo)
+    it.update()
+    innerPojoToOuter(innerPojo)
+  }
+
+  /**
+   * update row by id
+   * ```
+   * val updated = dao.updateById(id) { it.status = 1 }
+   * ```
+   * @return the updated row. converted to [OuterPojo]
+   */
+  fun updateById(id: OuterId, updateAction: (R) -> Unit): OuterPojo? = findRecordById(id)?.let {
+    updateAction(it)
+    it.update()
+    it.into(pojoClass)
+  }
+
+  /**
+   * find row by id. converted to [OuterPojo]
    */
   fun findById(id: OuterId): OuterPojo? {
     val innerId = idToInner(id)
@@ -160,7 +178,7 @@ open class WebjooqDao<R : UpdatableRecord<R>, OuterPojo : Any, InnerPojo : Any, 
   }
 
   /**
-   * fetch records by ids
+   * fetch rows by ids. converted to [OuterPojo]
    */
   fun fetchById(ids: Collection<OuterId>): MutableList<OuterPojo> {
     val innerIds = ids.map { idToInner(it) }
@@ -169,7 +187,7 @@ open class WebjooqDao<R : UpdatableRecord<R>, OuterPojo : Any, InnerPojo : Any, 
   }
 
   /**
-   * run [findAction] to find a record and convert it to [OuterPojo]
+   * run [findAction] to find a row. converted to [OuterPojo]
    */
   fun find(findAction: (D) -> InnerPojo?): OuterPojo? {
     val innerPojo = findAction(dao)
@@ -177,7 +195,7 @@ open class WebjooqDao<R : UpdatableRecord<R>, OuterPojo : Any, InnerPojo : Any, 
   }
 
   /**
-   * run [fetchAction] to fetch records and convert them to [OuterPojo]
+   * run [fetchAction] to fetch rows. converted to [OuterPojo]
    */
   fun fetch(fetchAction: (D) -> Collection<InnerPojo>): MutableList<OuterPojo> {
     val innerPojos = fetchAction(dao)
